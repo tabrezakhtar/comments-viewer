@@ -18,10 +18,10 @@ export default function Home() {
         />
         <Box sx={{ mt: 4, textAlign: { xs: 'center', sm: 'left' } }}>
           <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 600 }}>
-            Welcome to RiffTales Dashboard
+            Welcome to RiffTales Dashboard Beta
           </Typography>
           <Typography variant="body1" sx={{ mb: 4, color: 'text.secondary' }}>
-            Manage your comments and explore the features of RiffTales. Get started by viewing comments or checking the documentation.
+            Manage your comments and explore the features of RiffTales. Get started by viewing comments.
           </Typography>
         </Box>
         <Box sx={{ mt: 4 }}>
