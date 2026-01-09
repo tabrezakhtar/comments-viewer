@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import useSWR from "swr";
 import type { Comment } from "@/types";
-import CommentCard from "@/components/CommentCard";
+import CommentsList from "@/components/CommentsList";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -11,18 +11,45 @@ export default function CommentsPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sort, setSort] = useState<'asc' | 'desc'>('desc');
-  const { data, error, isLoading } = useSWR<{ comments: Comment[], total: number }>(`/api/comments?page=${page}&pageSize=${pageSize}&sort=${sort}`, fetcher);
+  const [search, setSearch] = useState('');
+  const [inputValue, setInputValue] = useState('');
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+  
+  useEffect(() => {
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+    debounceTimer.current = setTimeout(() => {
+      setSearch(inputValue);
+      setPage(1);
+    }, 300);
+    
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, [inputValue]);
+  
+  const { data, error, isLoading } = useSWR<{ comments: Comment[], total: number }>(`/api/comments?page=${page}&pageSize=${pageSize}&sort=${sort}&search=${encodeURIComponent(search)}`, fetcher, { keepPreviousData: true });
   const comments = data?.comments || [];
   const total = data?.total || 0;
   const totalPages = Math.ceil(total / pageSize);
-
-  if (error) return <div>Failed to load comments</div>;
-  if (isLoading) return <div>Loading...</div>;
 
   return (
     <main>
       <h1>User Comments</h1>
       <p>Welcome to the comments page!</p>
+      <div>
+        <label htmlFor="search">Search comments:</label>
+        <input
+          id="search"
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder="Enter search text"
+        />
+      </div>
       <div>
         <label htmlFor="sort">Sort by date:</label>
         <select
@@ -54,13 +81,9 @@ export default function CommentsPage() {
           <option value={100}>100</option>
         </select>
       </div>
-      <ul>
-        {comments.map((comment) => (
-          <li key={comment._id.toString()}>
-            <CommentCard comment={comment} />
-          </li>
-        ))}
-      </ul>
+      {error && <div>Failed to load comments</div>}
+      {isLoading && <div>Loading...</div>}
+      {!isLoading && !error && <CommentsList comments={comments} />}
       <div>
         <button
           onClick={() => setPage(page - 1)}
