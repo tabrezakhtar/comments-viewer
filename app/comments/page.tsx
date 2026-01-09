@@ -1,26 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from "react";
+import useSWR from "swr";
 import type { Comment } from "@/types";
 import CommentCard from "@/components/CommentCard";
 
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
 export default function CommentsPage() {
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch(`/api/comments?page=${page}&pageSize=${pageSize}`);
-      const data = await res.json();
-      setComments(data.comments);
-      setTotal(data.total);
-    };
-    fetchData();
-  }, [page, pageSize]);
-
+  const { data, error, isLoading } = useSWR<{ comments: Comment[], total: number }>(`/api/comments?page=${page}&pageSize=${pageSize}`, fetcher);
+  const comments = data?.comments || [];
+  const total = data?.total || 0;
   const totalPages = Math.ceil(total / pageSize);
+
+  if (error) return <div>Failed to load comments</div>;
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <main>
