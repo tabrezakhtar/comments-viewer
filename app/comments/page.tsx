@@ -10,7 +10,8 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 export default function CommentsPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const { data, error, isLoading } = useSWR<{ comments: Comment[], total: number }>(`/api/comments?page=${page}&pageSize=${pageSize}`, fetcher);
+  const [sort, setSort] = useState<'asc' | 'desc'>('desc');
+  const { data, error, isLoading } = useSWR<{ comments: Comment[], total: number }>(`/api/comments?page=${page}&pageSize=${pageSize}&sort=${sort}`, fetcher);
   const comments = data?.comments || [];
   const total = data?.total || 0;
   const totalPages = Math.ceil(total / pageSize);
@@ -22,6 +23,20 @@ export default function CommentsPage() {
     <main>
       <h1>User Comments</h1>
       <p>Welcome to the comments page!</p>
+      <div>
+        <label htmlFor="sort">Sort by date:</label>
+        <select
+          id="sort"
+          value={sort}
+          onChange={(e) => {
+            setSort(e.target.value as 'asc' | 'desc');
+            setPage(1); // Reset to first page
+          }}
+        >
+          <option value="desc">Newest first</option>
+          <option value="asc">Oldest first</option>
+        </select>
+      </div>
       <div>
         <label htmlFor="pageSize">Items per page:</label>
         <select
