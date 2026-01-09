@@ -19,7 +19,7 @@ export default function CommentCard({ comment }: CommentCardProps) {
       <CardContent>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', mb: 1 }}>
           <Typography variant="h6" component="h3" sx={{ fontWeight: 600 }}>
-            {String(comment.user)}
+            {String(comment.user.username)}
           </Typography>
           <Typography variant="caption" color="text.secondary">
             {formattedDate}

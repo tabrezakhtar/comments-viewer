@@ -10,7 +10,7 @@ export default function CommentsList({ comments }: CommentsListProps) {
   return (
     <List sx={{ width: '100%' }}>
       {comments.map((comment) => (
-        <ListItem key={comment._id.toString()} sx={{ p: 0, mb: 1 }}>
+        <ListItem key={String(comment._id)} sx={{ p: 0, mb: 1 }}>
           <CommentCard comment={comment} />
         </ListItem>
       ))}
