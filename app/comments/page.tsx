@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import useSWR from "swr";
+import Link from "next/link";
 import type { Comment } from "@/types";
 import CommentsList from "@/components/CommentsList";
 import SearchInput from "@/components/SearchInput";
-import { Container, Typography, Box, FormControl, InputLabel, Select, MenuItem, Alert, CircularProgress, Pagination, Stack } from '@mui/material';
+import { Container, Typography, Box, FormControl, InputLabel, Select, MenuItem, Alert, CircularProgress, Pagination, Stack, Button } from '@mui/material';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -22,6 +23,11 @@ export default function CommentsPage() {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Box sx={{ mb: 3 }}>
+        <Button component={Link} href="/" variant="text" sx={{ p: 0, minWidth: 'auto' }}>
+          ← Back to Home
+        </Button>
+      </Box>
       <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
         User Comments
       </Typography>
@@ -42,44 +48,56 @@ export default function CommentsPage() {
         />
       </Box>
       
-      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 3 }}>
-        <FormControl size="small" sx={{ minWidth: 200 }}>
-          <InputLabel id="sort-label">Sort by date</InputLabel>
-          <Select
-            labelId="sort-label"
-            id="sort"
-            value={sort}
-            label="Sort by date"
-            onChange={(e) => {
-              setSort(e.target.value as 'asc' | 'desc');
-              setPage(1);
-            }}
-          >
-            <MenuItem value="desc">Newest first</MenuItem>
-            <MenuItem value="asc">Oldest first</MenuItem>
-          </Select>
-        </FormControl>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+          <FormControl size="small" sx={{ minWidth: 200 }}>
+            <InputLabel id="sort-label">Sort by date</InputLabel>
+            <Select
+              labelId="sort-label"
+              id="sort"
+              value={sort}
+              label="Sort by date"
+              onChange={(e) => {
+                setSort(e.target.value as 'asc' | 'desc');
+                setPage(1);
+              }}
+            >
+              <MenuItem value="desc">Newest first</MenuItem>
+              <MenuItem value="asc">Oldest first</MenuItem>
+            </Select>
+          </FormControl>
+          
+          <FormControl size="small" sx={{ minWidth: 200 }}>
+            <InputLabel id="pageSize-label">Items per page</InputLabel>
+            <Select
+              labelId="pageSize-label"
+              id="pageSize"
+              value={pageSize}
+              label="Items per page"
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setPage(1);
+              }}
+            >
+              <MenuItem value={10}>10</MenuItem>
+              <MenuItem value={25}>25</MenuItem>
+              <MenuItem value={50}>50</MenuItem>
+              <MenuItem value={75}>75</MenuItem>
+              <MenuItem value={100}>100</MenuItem>
+            </Select>
+          </FormControl>
+        </Stack>
         
-        <FormControl size="small" sx={{ minWidth: 200 }}>
-          <InputLabel id="pageSize-label">Items per page</InputLabel>
-          <Select
-            labelId="pageSize-label"
-            id="pageSize"
-            value={pageSize}
-            label="Items per page"
-            onChange={(e) => {
-              setPageSize(Number(e.target.value));
-              setPage(1);
-            }}
-          >
-            <MenuItem value={10}>10</MenuItem>
-            <MenuItem value={25}>25</MenuItem>
-            <MenuItem value={50}>50</MenuItem>
-            <MenuItem value={75}>75</MenuItem>
-            <MenuItem value={100}>100</MenuItem>
-          </Select>
-        </FormControl>
-      </Stack>
+        <Pagination 
+          count={totalPages} 
+          page={page} 
+          onChange={(event, value) => setPage(value)}
+          color="primary"
+          showFirstButton
+          showLastButton
+          size="small"
+        />
+      </Box>
       
       {error && <Alert severity="error" sx={{ mb: 3 }}>Failed to load comments</Alert>}
       {isLoading && (
@@ -88,17 +106,6 @@ export default function CommentsPage() {
         </Box>
       )}
       {!isLoading && !error && <CommentsList comments={comments} />}
-      
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-        <Pagination 
-          count={totalPages} 
-          page={page} 
-          onChange={(event, value) => setPage(value)}
-          color="primary"
-          showFirstButton
-          showLastButton
-        />
-      </Box>
     </Container>
   );
 }
