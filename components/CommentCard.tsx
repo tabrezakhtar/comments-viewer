@@ -1,4 +1,5 @@
 import { Comment } from '@/types';
+import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
 
 interface CommentCardProps {
   comment: Comment;
@@ -14,17 +15,28 @@ export default function CommentCard({ comment }: CommentCardProps) {
   });
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 mb-4 border border-gray-200">
-      <div className="flex justify-between items-start mb-2">
-        <h3 className="font-semibold text-gray-800">{String(comment.user)}</h3>
-        <span className="text-sm text-gray-500">{formattedDate}</span>
-      </div>
-      <p className="text-gray-700">{comment.text}</p>
-      {comment.equipmentId && (
-        <div className="mt-2 text-xs text-gray-500">
-          Equipment ID: {String(comment.equipmentId)}
-        </div>
-      )}
-    </div>
+    <Card sx={{ mb: 2, boxShadow: 2 }}>
+      <CardContent>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', mb: 1 }}>
+          <Typography variant="h6" component="h3" sx={{ fontWeight: 600 }}>
+            {String(comment.user)}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            {formattedDate}
+          </Typography>
+        </Box>
+        <Typography variant="body1" color="text.primary" sx={{ mb: 1 }}>
+          {comment.text}
+        </Typography>
+        {comment.equipmentId && (
+          <Chip 
+            label={`Equipment ID: ${String(comment.equipmentId)}`} 
+            size="small" 
+            variant="outlined" 
+            sx={{ mt: 1 }}
+          />
+        )}
+      </CardContent>
+    </Card>
   );
 }

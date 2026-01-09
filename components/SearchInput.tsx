@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState, useEffect } from 'react';
+import { TextField } from '@mui/material';
 
 interface SearchInputProps {
   value: string;
@@ -31,20 +32,21 @@ export default function SearchInput({ value, onChange, placeholder = "Search..."
   }, [onChange, debounceMs]);
 
   return (
-    <div>
-      <label htmlFor={id}>{label}:</label>
-      <input
-        id={id}
-        type="text"
-        value={internalValue}
-        onChange={(e) => {
-          const newValue = e.target.value;
-          setInternalValue(newValue);
-          handleChange(newValue);
-        }}
-        placeholder={placeholder}
-        autoComplete="off"
-      />
-    </div>
+    <TextField
+      id={id}
+      label={label}
+      value={internalValue}
+      onChange={(e) => {
+        const newValue = e.target.value;
+        setInternalValue(newValue);
+        handleChange(newValue);
+      }}
+      placeholder={placeholder}
+      autoComplete="off"
+      fullWidth
+      variant="outlined"
+      size="small"
+      sx={{ mb: 2 }}
+    />
   );
 }

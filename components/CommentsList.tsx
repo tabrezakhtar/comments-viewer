@@ -1,5 +1,6 @@
 import type { Comment } from "@/types";
 import CommentCard from "@/components/CommentCard";
+import { List, ListItem } from '@mui/material';
 
 interface CommentsListProps {
   comments: Comment[];
@@ -7,12 +8,12 @@ interface CommentsListProps {
 
 export default function CommentsList({ comments }: CommentsListProps) {
   return (
-    <ul>
+    <List sx={{ width: '100%' }}>
       {comments.map((comment) => (
-        <li key={comment._id.toString()}>
+        <ListItem key={comment._id.toString()} sx={{ p: 0, mb: 1 }}>
           <CommentCard comment={comment} />
-        </li>
+        </ListItem>
       ))}
-    </ul>
+    </List>
   );
 }
