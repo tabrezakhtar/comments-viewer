@@ -26,7 +26,7 @@ export default function Home() {
         </Box>
         <Box sx={{ mt: 4 }}>
           <Button
-            variant="outlined"
+            variant="contained"
             fullWidth
             component={Link}
             href="/comments"
