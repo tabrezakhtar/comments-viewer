@@ -6,7 +6,8 @@ export async function fetchComments(page: number = 1, pageSize: number = 10, sor
   const db = client.db("guitar-db");
   const skip = (page - 1) * pageSize;
   const query = search ? { text: { $regex: search, $options: 'i' } } : {};
-  const comments = await db.collection<Comment>("comments").find(query).sort({ createdAt: sort === 'asc' ? 1 : -1 }).skip(skip).limit(pageSize).toArray();
+  const comments = await db.collection<Comment>("comments").find(query).sort({ date: sort === 'asc' ? 1 : -1 }).skip(skip).limit(pageSize).toArray();
   const total = await db.collection<Comment>("comments").countDocuments(query);
+  console.log(comments)
   return { comments, total };
 }
