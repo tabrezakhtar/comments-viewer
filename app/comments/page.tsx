@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import useSWR from "swr";
 import type { Comment } from "@/types";
 import CommentsList from "@/components/CommentsList";
+import SearchInput from "@/components/SearchInput";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -12,24 +13,6 @@ export default function CommentsPage() {
   const [pageSize, setPageSize] = useState(10);
   const [sort, setSort] = useState<'asc' | 'desc'>('desc');
   const [search, setSearch] = useState('');
-  const [inputValue, setInputValue] = useState('');
-  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
-  
-  useEffect(() => {
-    if (debounceTimer.current) {
-      clearTimeout(debounceTimer.current);
-    }
-    debounceTimer.current = setTimeout(() => {
-      setSearch(inputValue);
-      setPage(1);
-    }, 300);
-    
-    return () => {
-      if (debounceTimer.current) {
-        clearTimeout(debounceTimer.current);
-      }
-    };
-  }, [inputValue]);
   
   const { data, error, isLoading } = useSWR<{ comments: Comment[], total: number }>(`/api/comments?page=${page}&pageSize=${pageSize}&sort=${sort}&search=${encodeURIComponent(search)}`, fetcher, { keepPreviousData: true });
   const comments = data?.comments || [];
@@ -40,16 +23,16 @@ export default function CommentsPage() {
     <main>
       <h1>User Comments</h1>
       <p>Welcome to the comments page!</p>
-      <div>
-        <label htmlFor="search">Search comments:</label>
-        <input
-          id="search"
-          type="text"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          placeholder="Enter search text"
-        />
-      </div>
+      <SearchInput
+        value={search}
+        onChange={(value) => {
+          setSearch(value);
+          setPage(1);
+        }}
+        debounceMs={300}
+        placeholder="Enter search text"
+        label="Search comments"
+      />
       <div>
         <label htmlFor="sort">Sort by date:</label>
         <select
